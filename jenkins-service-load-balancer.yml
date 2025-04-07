@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-load-balancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: my_jenkins
+    
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      
