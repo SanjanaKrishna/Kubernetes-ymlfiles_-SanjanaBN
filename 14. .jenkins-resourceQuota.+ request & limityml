@@ -1,0 +1,25 @@
+#Resource Quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: jenkins-resourcequota
+  namespace: test1
+spec:
+  hard:
+    pods: "3"
+
+#Limit Range
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: jenkins-limitrange
+  namespace: test1
+spec:
+  limits:
+  - default:
+      cpu: 0.4
+      memory: 250Mi
+    defaultRequest:
+      cpu: 0.4
+      memory: 250Mi
+    type: Container
