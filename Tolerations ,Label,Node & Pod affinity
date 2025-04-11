@@ -1,0 +1,63 @@
+######## Tolerations <same level as container> #########
+ tolerations:
+        - key: "name"
+          operator: "Equal"
+          value: "dev"
+          effect: "NoExecute"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##### Label ######
+   nodeSelector:
+     colour: yellow
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Affinity #####
+------ hard rule -------
+ affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: color
+                operator: In
+                values:
+                - red
+                - blue
+------- soft rule -----------------------------------------
+affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 5
+            preference:
+              matchExpressions:
+              - key: color
+                operator: In
+                values:
+                - pink
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+############# pod anti-affinity #################################
+
+ affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - tomcat
+            topologyKey: "kubernetes.io/hostname"
+
+#################### pod affinity ##############################
+affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - tomcat
+            topologyKey: "kubernetes.io/hostname"
+
