@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-deployment
+  labels:
+    app: jenkins
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      volumes: 
+        - name: jenkins-vol
+          hostPath: 
+            path: /root/my_jenkins
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: jenkins-vol
+          mountPath: /var/jenkins_home
