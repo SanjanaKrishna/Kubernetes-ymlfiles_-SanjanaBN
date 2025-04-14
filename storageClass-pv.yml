@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce   # Or ReadWriteMany if your driver supports it (e.g. EFS)
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ebs-sc
