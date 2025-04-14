@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ebs-static-pv-1
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""  # No storage class for static provisioning
+  awsElasticBlockStore:
+    volumeID: vol-015521d4bf1870eac
+    fsType: ext4
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: color
+              operator: In
+              values:
+                - red
