@@ -45,7 +45,7 @@ spec:
         - "*"
 
 
- cat istio-backendVirtualSvc.yml 
+3. cat istio-backendVirtualSvc.yml 
 
 
 apiVersion: networking.istio.io/v1beta1
@@ -71,7 +71,7 @@ spec:
 
 
 
-cat istio-frontendVirtualSvc.yml 
+4.cat istio-frontendVirtualSvc.yml 
 
 
 apiVersion: networking.istio.io/v1beta1
@@ -95,7 +95,7 @@ spec:
               number: 3000
 
 
-cat istio-deployment.yml 
+5. cat istio-deployment.yml 
 
 
 apiVersion: apps/v1
