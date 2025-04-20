@@ -1,0 +1,175 @@
+﻿kubectl create namespace istio-system
+
+
+helm repo add istio https://istio-release.storage.googleapis.com/charts
+
+
+helm repo update
+
+
+1. Install istio system
+
+
+helm install istio-base istio/base -n istio-system
+
+
+helm install istiod istio/istiod -n istio-system \
+  --set global.istioNamespace=istio-system
+
+
+helm install istio-ingress istio/gateway -n istio-system
+
+
+kubectl get deployment istio-ingress -n istio-system -o jsonpath='{.spec.selector.matchLabels}'
+
+
+
+
+2. cat istio-gateway.yml 
+
+
+ apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: myapp-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingress  # Use Istio default ingress gateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+
+ cat istio-backendVirtualSvc.yml 
+
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: myapp-vs-be
+  namespace: default
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - myapp-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /api/
+      route:
+        - destination:
+            host: backend-service 
+            port:
+              number: 5005
+
+
+
+
+cat istio-frontendVirtualSvc.yml 
+
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: myapp-vs-fe
+  namespace: default
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - myapp-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: frontend-service 
+            port:
+              number: 3000
+
+
+cat istio-deployment.yml 
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-reach-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: hhgsharish/python-reach-backend:latest
+
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 5005
+    targetPort: 5005
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-reach-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: hhgsharish/python-reach-frontend:v1
+        env: 
+        - name: REACT_APP_BACKEND_SERVER
+          value: "http://a0310a47685bc40f5aab1c86987e4ec4-482477140.ap-northeast-3.elb.amazonaws.com/api/"      ### from kubectl get svc -n istio-system
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+
+
+
+
+https://istio.io/latest/docs/overview/what-is-istio/
