@@ -1,9 +1,31 @@
-helm install my-jenkins /jenkins -n my-jenkins --create-namespace
+ helm install my-jenkins /jenkins -n my-jenkins --create-namespace
 
-helm upgrade  my-jenkins ./ -n my-jenkins --set replicas=3
+ helm upgrade  my-jenkins ./ -n my-jenkins --set replicas=3
 
-kubectl get all -n my-jenkins
+ kubectl get all -n my-jenkins
 
  helm uninstall my-jenkins -n my-jenkins
 
  helm ls -A
+
+ helm template my-jenkins ./jenkins -n my-jenkins
+
+ helm template my-jenkins ./jenkins -n my-jenkins > heml-jenkins-deployment.yml
+
+ helm install my-jenkins ./ -n my-jenkins --create-namespace --dry-run
+
+ helm install my-jenkins ./ -n my-jenkins --create-namespace 
+
+ helm rollback my-jenkins 2 -n my-jenkins
+
+ helm ls -n my-jenkins
+
+ helm history my-jenkins -n my-jenkins
+
+ helm get values -n my-jenkins
+
+ helm get values my-jenkins -n my-jenkins
+
+ helm get all my-jenkins -n my-jenkins
+
+ helm get all my-jenkins -n my-jenkins --revision 3
