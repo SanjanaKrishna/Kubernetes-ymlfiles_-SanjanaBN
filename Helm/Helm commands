@@ -1,0 +1,9 @@
+helm install my-jenkins /jenkins -n my-jenkins --create-namespace
+
+helm upgrade  my-jenkins ./ -n my-jenkins --set replicas=3
+
+kubectl get all -n my-jenkins
+
+ helm uninstall my-jenkins -n my-jenkins
+
+ helm ls -A
