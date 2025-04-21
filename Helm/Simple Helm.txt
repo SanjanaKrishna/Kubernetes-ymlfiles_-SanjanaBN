@@ -1,0 +1,127 @@
+﻿Simple Helm
+
+
+Empty values.yml
+
+
+jenkins/.
+├── Chart.yaml
+├── templates
+│   ├── deployment-jenkins.yml
+│   ├── pv-jenkins.yml
+│   ├── pvc-jenkins.yml
+│   └── svc-jenkins.yml
+└── values.yaml
+
+
+
+
+pv-jenkins.yml
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /mnt/data
+
+
+
+
+pvc-jenkins.yml
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual
+
+
+svc-jenkins.yml
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-service
+spec:
+  type: NodePort
+  selector:
+    app: jenkins-set
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30077
+
+
+
+
+deployment-jenkins.yml
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-deployment
+  labels:
+    app: jenkins-set
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: jenkins-set
+  template:
+    metadata:
+      labels:
+        app: jenkins-set
+    spec:
+      volumes:
+        - name: local-volume
+          persistentVolumeClaim:
+            claimName: jenkins-pvc
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:latest
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: local-volume
+              mountPath: /var/jenkins_home
+
+
+Commands 
+
+
+helm install my-jenkins /jenkins -n my-jenkins --create-namespace
+
+
+helm upgrade  my-jenkins ./ -n my-jenkins --set replicas=3
+
+
+kubectl get all -n my-jenkins
+
+
+ helm uninstall my-jenkins -n my-jenkins
+
+
+ helm ls -A
